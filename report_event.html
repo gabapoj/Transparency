@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Upload images to server using Node JS</title>
+    <script
+      src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+      type="text/javascript"
+    ></script>
+  </head>
+  <style>
+    #overlay {
+      cursor: pointer;
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgb(63, 53, 53);
+      z-index: 2;
+      cursor: pointer;
+    }
+
+    #map {
+      position: relative;
+      width: 554px;
+      height: 482px;
+      left: 37.5%;
+      top: 25%px;
+    }
+
+    #explanation {
+      position: relative;
+      width: 554px;
+      height: 482px;
+      left: 37.5%;
+      top: 50%;
+    }
+
+    #form {
+      position: relative;
+      width: 20%;
+      height: 100px;
+      top: 75%;
+      left: 40%;
+      padding: 50px;
+      background: #c4c4c4;
+      border-radius: 10%;
+    }
+  </style>
+  <body>
+    <button id="readButton" onclick="on()">Preview Submission</button>
+
+    <div id="overlay" onclick="off()">
+      <div id="text">Overlay Text</div>
+    </div>
+
+    <div id="map"></div>
+    <input
+      type="text"
+      id="explanation"
+      value="Please use words to describe the event..."
+    />
+    <div id="form">
+      <form
+        id="frmUploader"
+        enctype="multipart/form-data"
+        action="api/Upload/"
+        method="post"
+      >
+        <input id="files" type="file" name="imgUploader" multiple />
+        <input type="submit" name="submit" id="btnSubmit" value="Submit" />
+      </form>
+    </div>
+  </body>
+  <script>
+    // Only activate the following, AFTER the user has previewed his/her post
+    // from the overlay and has clicked 'post'
+    // $("#frmUploader").submit();
+
+    $(document).ready(function() {
+      // Get value on button click and show alert
+      $("#readButton").click(function() {
+        // In app.js we limit the number of strings that a post can have at 6
+        var str1 = null;
+        var str2 = null;
+        var str3 = null;
+        var str4 = null;
+        var str5 = null;
+        var str6 = null;
+        for (i = 0; i < document.getElementById("files").files.length; i++) {
+          if (i == 0) {
+            str1 = document.getElementById("files").files[0].name;
+            console.log(str1);
+          }
+          if (i == 1) {
+            str2 = document.getElementById("files").files[1].name;
+          }
+          if (i == 2) {
+            str3 = document.getElementById("files").files[2].name;
+          }
+          if (i == 3) {
+            str4 = document.getElementById("files").files[3].name;
+          }
+          if (i == 4) {
+            str5 = document.getElementById("files").files[4].name;
+          }
+          if (i == 5) {
+            str6 = document.getElementById("files").files[5].name;
+          }
+        }
+      });
+    });
+
+    var marker;
+    function initMap() {
+      var map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 13,
+        center: { lat: 59.325, lng: 18.07 }
+      });
+
+      marker = new google.maps.Marker({
+        map: map,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+        position: { lat: 59.327, lng: 18.067 },
+        title: "Drag me!"
+      });
+      marker.addListener("click", toggleBounce);
+
+      marker.addListener("dragend", event => {
+        var latitude = event.latLng.lat();
+        var longitude = event.latLng.lng();
+      });
+    }
+    function toggleBounce() {
+      if (marker.getAnimation() !== null) {
+        marker.setAnimation(null);
+      } else {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+      }
+    }
+
+    // beginning of overlay code: the goal is to create a dynamic overlay when the user clicks "Preview"
+    function on() {
+      document.getElementById("overlay").style.display = "block";
+      var previewImgVidUpl = document.createElement("img");
+      if (str1 != null) {
+        previewImgVidUpl.src = str1;
+      }
+      document.getElementById("overlay").appendChild(previewImgVidUpl);
+    }
+
+    function off() {
+      document.getElementById("overlay").style.display = "none";
+    }
+    // end of overlay code
+  </script>
+  <script
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2KDbfXLwUbnbNQ30ix2d_s29hrE_xn8g&libraries=places&callback=initMap"
+  ></script>
+</html>
